@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# Function to shorten categories based on a cutoff
 def shorten_categories(categories, cutoff):
     categorical_map = {}
     for i in range(len(categories)):
@@ -12,6 +13,7 @@ def shorten_categories(categories, cutoff):
     return categorical_map
 
 
+# Function to clean experience data
 def clean_experience(x):
     if x ==  'More than 50 years':
         return 50
@@ -20,6 +22,7 @@ def clean_experience(x):
     return float(x)
 
 
+# Function to clean education data
 def clean_education(x):
     if 'Bachelor’s degree' in x:
         return 'Bachelor’s degree'
@@ -30,6 +33,7 @@ def clean_education(x):
     return 'Less than a Bachelors'
 
 
+# Function to load and preprocess data
 @st.cache
 def load_data():
     df = pd.read_csv("survey_results_public.csv")
@@ -50,8 +54,10 @@ def load_data():
     df['EdLevel'] = df['EdLevel'].apply(clean_education)
     return df
 
+# Load data
 df = load_data()
 
+# Function to display the exploration page
 def show_explore_page():
     st.title("Explore Software Engineer Salaries")
 
@@ -60,6 +66,7 @@ def show_explore_page():
     ### Stack Overflow Developer Survey 2020"""
     )
 
+# Pie chart for number of data from different countries
     data = df["Country"].value_counts()
 
     fig1,ax1 = plt.subplots()
@@ -70,9 +77,17 @@ def show_explore_page():
 
     st.pyplot(fig1)
 
+# Bar chart for mean salary based on country
     st.write("""
     #### Mean Salary Based on Country
     """)
 
     data = df.groupby(["Country"])["Salary"].mean().sort_values(ascending=True)
     st.bar_chart(data)
+
+# Line chart for mean salary based on experience
+    st.write("""
+    #### Mean Salary Based on Experience""")
+
+    data = df.groupby(["YearsCodePro"])["Salary"].mean().sort_values(ascending=True)
+    st.line_chart(data)
